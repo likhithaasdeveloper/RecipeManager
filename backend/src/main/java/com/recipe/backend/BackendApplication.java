@@ -1,4 +1,4 @@
-package com.recipe.backend;
+	package com.recipe.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
