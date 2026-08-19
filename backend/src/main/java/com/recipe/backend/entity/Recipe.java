@@ -65,4 +65,7 @@ public class Recipe {
     public void setServings(Integer servings) {
         this.servings = servings;
     }
+    public void setId(Long id) {
+    this.id = id;
+}
 }
