@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 public class Recipe {
@@ -12,12 +14,16 @@ public class Recipe {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String name;
 
+    @NotBlank
     private String cuisine;
 
+    @Positive
     private Integer prepTime;
 
+    @Positive
     private Integer servings;
 
     public Recipe() {
@@ -32,6 +38,10 @@ public class Recipe {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -65,7 +75,4 @@ public class Recipe {
     public void setServings(Integer servings) {
         this.servings = servings;
     }
-    public void setId(Long id) {
-    this.id = id;
-}
 }

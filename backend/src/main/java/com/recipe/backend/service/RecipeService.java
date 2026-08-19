@@ -2,9 +2,12 @@ package com.recipe.backend.service;
 
 import com.recipe.backend.entity.Recipe;
 import com.recipe.backend.repository.RecipeRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,8 +19,15 @@ public class RecipeService {
         this.recipeRepository = recipeRepository;
     }
 
-    public List<Recipe> getAllRecipes() {
-        return recipeRepository.findAll();
+    public Page<Recipe> getRecipes(int page, int size, String cuisine) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (cuisine != null && !cuisine.isBlank()) {
+            return recipeRepository.findByCuisineIgnoreCase(cuisine, pageable);
+        }
+
+        return recipeRepository.findAll(pageable);
     }
 
     public Optional<Recipe> getRecipeById(Long id) {
@@ -29,16 +39,17 @@ public class RecipeService {
     }
 
     public Recipe updateRecipe(Long id, Recipe recipe) {
-    recipe.setId(id);
-    return recipeRepository.save(recipe);
-}
-
-    public boolean deleteRecipe(Long id) {
-    if (!recipeRepository.existsById(id)) {
-        return false;
+        recipe.setId(id);
+        return recipeRepository.save(recipe);
     }
 
-    recipeRepository.deleteById(id);
-    return true;
-}
+    public boolean deleteRecipe(Long id) {
+
+        if (!recipeRepository.existsById(id)) {
+            return false;
+        }
+
+        recipeRepository.deleteById(id);
+        return true;
+    }
 }
