@@ -1,5 +1,6 @@
 package com.recipe.backend.controller;
 
+import com.recipe.backend.dto.IngredientResponse;
 import com.recipe.backend.entity.Ingredient;
 import com.recipe.backend.service.IngredientService;
 
@@ -22,14 +23,15 @@ public class IngredientController {
     }
 
     @GetMapping
-    public List<Ingredient> getAllIngredients() {
+    public List<IngredientResponse> getAllIngredients() {
         return ingredientService.getAllIngredients();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Ingredient> getIngredientById(@PathVariable Long id) {
+    public ResponseEntity<IngredientResponse> getIngredientById(
+            @PathVariable Long id) {
 
-        Optional<Ingredient> ingredient =
+        Optional<IngredientResponse> ingredient =
                 ingredientService.getIngredientById(id);
 
         if (ingredient.isPresent()) {
@@ -40,7 +42,7 @@ public class IngredientController {
     }
 
     @PostMapping
-    public ResponseEntity<Ingredient> createIngredient(
+    public ResponseEntity<IngredientResponse> createIngredient(
             @Valid @RequestBody Ingredient ingredient) {
 
         return ResponseEntity.ok(
@@ -49,7 +51,7 @@ public class IngredientController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Ingredient> updateIngredient(
+    public ResponseEntity<IngredientResponse> updateIngredient(
             @PathVariable Long id,
             @Valid @RequestBody Ingredient ingredient) {
 
@@ -63,7 +65,8 @@ public class IngredientController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteIngredient(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteIngredient(
+            @PathVariable Long id) {
 
         if (ingredientService.deleteIngredient(id)) {
             return ResponseEntity.noContent().build();
@@ -73,7 +76,7 @@ public class IngredientController {
     }
 
     @GetMapping("/recipe/{recipeId}")
-    public List<Ingredient> getIngredientsByRecipeId(
+    public List<IngredientResponse> getIngredientsByRecipeId(
             @PathVariable Long recipeId) {
 
         return ingredientService.getIngredientsByRecipeId(recipeId);

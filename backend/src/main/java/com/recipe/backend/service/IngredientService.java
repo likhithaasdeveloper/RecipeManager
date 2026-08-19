@@ -1,11 +1,13 @@
 package com.recipe.backend.service;
 
+import com.recipe.backend.dto.IngredientResponse;
 import com.recipe.backend.entity.Ingredient;
 import com.recipe.backend.repository.IngredientRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class IngredientService {
@@ -16,21 +18,28 @@ public class IngredientService {
         this.ingredientRepository = ingredientRepository;
     }
 
-    public List<Ingredient> getAllIngredients() {
-        return ingredientRepository.findAll();
+    public List<IngredientResponse> getAllIngredients() {
+        return ingredientRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Ingredient> getIngredientById(Long id) {
-        return ingredientRepository.findById(id);
+    public Optional<IngredientResponse> getIngredientById(Long id) {
+        return ingredientRepository.findById(id)
+                .map(this::toResponse);
     }
 
-    public Ingredient createIngredient(Ingredient ingredient) {
-        return ingredientRepository.save(ingredient);
+    public IngredientResponse createIngredient(Ingredient ingredient) {
+        Ingredient savedIngredient = ingredientRepository.save(ingredient);
+        return toResponse(savedIngredient);
     }
 
-    public Ingredient updateIngredient(Long id, Ingredient ingredient) {
+    public IngredientResponse updateIngredient(Long id, Ingredient ingredient) {
         ingredient.setId(id);
-        return ingredientRepository.save(ingredient);
+
+        Ingredient updatedIngredient = ingredientRepository.save(ingredient);
+        return toResponse(updatedIngredient);
     }
 
     public boolean deleteIngredient(Long id) {
@@ -42,7 +51,19 @@ public class IngredientService {
         return true;
     }
 
-    public List<Ingredient> getIngredientsByRecipeId(Long recipeId) {
-        return ingredientRepository.findByRecipeId(recipeId);
+    public List<IngredientResponse> getIngredientsByRecipeId(Long recipeId) {
+        return ingredientRepository.findByRecipeId(recipeId)
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    private IngredientResponse toResponse(Ingredient ingredient) {
+        return new IngredientResponse(
+                ingredient.getId(),
+                ingredient.getName(),
+                ingredient.getQuantity(),
+                ingredient.getUnit()
+        );
     }
 }
