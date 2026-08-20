@@ -116,7 +116,7 @@ The instructions are displayed as numbered steps on the recipe details page.
 
 The application follows a client-server architecture.
 
-```text
+
                     +----------------------+
                     |      React.js        |
                     |      Frontend        |
@@ -144,6 +144,7 @@ The application follows a client-server architecture.
                     +----------------------+
                     |      Database        |
                     +----------------------+
+
 
 ## Data Model
 
@@ -174,18 +175,18 @@ The application currently contains two main entities.
 
 One recipe can have multiple ingredients.
 
-```text
+
 Recipe 1  ───────────  * Ingredient
 
 
 ## How to run
 
-1. Run the Backend
-cd backend
+1. Run the Backend->
+   cd backend
 ./mvnw spring-boot:run
 
-2.Run the Frontend
-Open another terminal:
+3. Run the Frontend
+Open another terminal->
 cd frontend
 npm install
 npm run dev
