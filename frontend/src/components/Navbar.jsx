@@ -6,7 +6,7 @@ function Navbar({ currentPage, onNavigate, onAddRecipe }) {
         className="brand"
         onClick={() => onNavigate('home')}
       >
-        <span className="brand-icon">🍴</span>
+        <span className="brand-icon"></span>
         <span>Recipe Manager</span>
       </button>
 
@@ -26,12 +26,7 @@ function Navbar({ currentPage, onNavigate, onAddRecipe }) {
           Explore
         </button>
 
-        <button
-          className="nav-add-button"
-          onClick={onAddRecipe}
-        >
-          + Add Recipe
-        </button>
+        
 
       </div>
 

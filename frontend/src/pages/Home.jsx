@@ -46,22 +46,22 @@ function Home({ onExplore, onAddRecipe }) {
           <div className="hero-circle"></div>
 
           <div className="food-card food-card-main">
-            <div className="food-emoji">🍝</div>
+            
 
             <div>
-              <strong>Delicious Pasta</strong>
-              <span>Italian Cuisine</span>
+              <strong>Delicious Paneer</strong>
+              <span>Indian Cuisine</span>
             </div>
           </div>
 
           <div className="floating-card floating-card-top">
-            🍕
+            
             <span>Pizza</span>
           </div>
 
           <div className="floating-card floating-card-bottom">
-            🍛
-            <span>Biryani</span>
+            
+            <span>Mutton Biryani</span>
           </div>
 
         </div>
@@ -92,14 +92,14 @@ function Home({ onExplore, onAddRecipe }) {
       <section className="features-section">
 
         <div className="section-heading">
-          <span>WHY RECIPEVAULT?</span>
+          <span>WHY RECIPE MANAGER?</span>
           <h2>Everything you need to explore food.</h2>
         </div>
 
         <div className="feature-grid">
 
           <div className="feature-card">
-            <div className="feature-icon">🔎</div>
+            
             <h3>Discover</h3>
             <p>
               Find recipes quickly using search and cuisine filters.
@@ -107,7 +107,7 @@ function Home({ onExplore, onAddRecipe }) {
           </div>
 
           <div className="feature-card">
-            <div className="feature-icon">🍽️</div>
+            
             <h3>Explore</h3>
             <p>
               Browse recipes from different cuisines and discover
@@ -116,7 +116,7 @@ function Home({ onExplore, onAddRecipe }) {
           </div>
 
           <div className="feature-card">
-            <div className="feature-icon">✨</div>
+            
             <h3>Create</h3>
             <p>
               Add your own recipes and organize all their ingredients.

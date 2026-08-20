@@ -194,11 +194,8 @@ function RecipeForm({ onRecipeAdded, onCancel }) {
                         placeholder={`Example:
 
                                 1. Boil the eggs until fully cooked.
-                                2. Heat oil in a pan.
-                                3. Add onions and sauté until golden.
-                                4. Add spices and tomatoes.
-                                5. Add cooked rice and eggs.
-                                6. Mix well and serve hot.`}
+                                2. Heat oil in a pan....
+                                `}
                         value={instructions}
                         onChange={(e) => setInstructions(e.target.value)}
                     />
