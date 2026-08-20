@@ -3,6 +3,7 @@ import {
   getRecipeById,
   getIngredientsByRecipeId,
   deleteRecipe,
+  createIngredient,
   updateIngredient,
   deleteIngredient,
 } from '../services/recipeApi'
@@ -20,7 +21,10 @@ function RecipeDetails({
 
   const [deleting, setDeleting] = useState(false)
 
-  // Ingredient editing
+  // =========================
+  // INGREDIENT EDITING
+  // =========================
+
   const [editingIngredientId, setEditingIngredientId] = useState(null)
   const [ingredientName, setIngredientName] = useState('')
   const [ingredientQuantity, setIngredientQuantity] = useState('')
@@ -28,6 +32,22 @@ function RecipeDetails({
 
   const [savingIngredient, setSavingIngredient] = useState(false)
   const [deletingIngredientId, setDeletingIngredientId] = useState(null)
+
+  // =========================
+  // ADD INGREDIENT
+  // =========================
+
+  const [showAddIngredient, setShowAddIngredient] = useState(false)
+
+  const [newIngredientName, setNewIngredientName] = useState('')
+  const [newIngredientQuantity, setNewIngredientQuantity] = useState('')
+  const [newIngredientUnit, setNewIngredientUnit] = useState('')
+
+  const [addingIngredient, setAddingIngredient] = useState(false)
+
+  // =========================
+  // LOAD RECIPE DETAILS
+  // =========================
 
   useEffect(() => {
     async function loadRecipeDetails() {
@@ -180,6 +200,75 @@ function RecipeDetails({
   }
 
   // =========================
+  // START ADD INGREDIENT
+  // =========================
+
+  function startAddIngredient() {
+    setShowAddIngredient(true)
+
+    setNewIngredientName('')
+    setNewIngredientQuantity('')
+    setNewIngredientUnit('')
+
+    setError('')
+  }
+
+  // =========================
+  // CANCEL ADD INGREDIENT
+  // =========================
+
+  function cancelAddIngredient() {
+    setShowAddIngredient(false)
+
+    setNewIngredientName('')
+    setNewIngredientQuantity('')
+    setNewIngredientUnit('')
+  }
+
+  // =========================
+  // SAVE NEW INGREDIENT
+  // =========================
+
+  async function handleAddIngredient() {
+    if (
+      !newIngredientName ||
+      !newIngredientQuantity ||
+      !newIngredientUnit
+    ) {
+      setError('Please fill in all ingredient fields')
+      return
+    }
+
+    try {
+      setAddingIngredient(true)
+      setError('')
+
+      const newIngredient = await createIngredient({
+        name: newIngredientName,
+        quantity: Number(newIngredientQuantity),
+        unit: newIngredientUnit,
+        recipe: {
+          id: recipeId,
+        },
+      })
+
+      // Add the newly created ingredient to the UI
+      setIngredients((currentIngredients) => [
+        ...currentIngredients,
+        newIngredient,
+      ])
+
+      // Close form
+      cancelAddIngredient()
+
+    } catch (err) {
+      setError('Failed to add ingredient')
+    } finally {
+      setAddingIngredient(false)
+    }
+  }
+
+  // =========================
   // LOADING
   // =========================
 
@@ -239,7 +328,7 @@ function RecipeDetails({
             className="edit-button"
             onClick={onEdit}
           >
-            ✏️ Edit
+            Edit
           </button>
 
           <button
@@ -247,7 +336,7 @@ function RecipeDetails({
             onClick={handleDelete}
             disabled={deleting}
           >
-            {deleting ? 'Deleting...' : '🗑️ Delete'}
+            {deleting ? 'Deleting...' : 'Delete'}
           </button>
 
         </div>
@@ -307,6 +396,87 @@ function RecipeDetails({
           </span>
 
         </div>
+
+        {/* =========================
+            ADD INGREDIENT BUTTON
+            ========================= */}
+
+        {!showAddIngredient && (
+          <button
+            className="add-ingredient-details-button"
+            onClick={startAddIngredient}
+          >
+            + Add Ingredient
+          </button>
+        )}
+
+        {/* =========================
+            ADD INGREDIENT FORM
+            ========================= */}
+
+        {showAddIngredient && (
+
+          <div className="add-ingredient-form">
+
+            <h3>Add Ingredient</h3>
+
+            <div className="ingredient-add-fields">
+
+              <input
+                type="text"
+                placeholder="Ingredient name"
+                value={newIngredientName}
+                onChange={(e) =>
+                  setNewIngredientName(e.target.value)
+                }
+              />
+
+              <input
+                type="number"
+                min="1"
+                placeholder="Quantity"
+                value={newIngredientQuantity}
+                onChange={(e) =>
+                  setNewIngredientQuantity(e.target.value)
+                }
+              />
+
+              <input
+                type="text"
+                placeholder="Unit"
+                value={newIngredientUnit}
+                onChange={(e) =>
+                  setNewIngredientUnit(e.target.value)
+                }
+              />
+
+            </div>
+
+            <div className="ingredient-add-actions">
+
+              <button
+                className="cancel-ingredient-button"
+                onClick={cancelAddIngredient}
+                disabled={addingIngredient}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="save-ingredient-button"
+                onClick={handleAddIngredient}
+                disabled={addingIngredient}
+              >
+                {addingIngredient
+                  ? 'Adding...'
+                  : 'Add Ingredient'}
+              </button>
+
+            </div>
+
+          </div>
+
+        )}
 
         {ingredients.length > 0 ? (
 
@@ -388,9 +558,7 @@ function RecipeDetails({
 
                   <>
 
-                    <div className="ingredient-icon">
-                      🥄
-                    </div>
+                    
 
                     <div className="ingredient-content">
 
@@ -413,7 +581,7 @@ function RecipeDetails({
                           startIngredientEdit(ingredient)
                         }
                       >
-                        ✏️
+                        Edit
                       </button>
 
                       <button

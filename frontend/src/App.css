@@ -1294,3 +1294,79 @@
   border-color: #8b5cf6;
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
 }
+
+/* =========================
+   ADD INGREDIENT FROM DETAILS
+   ========================= */
+
+.add-ingredient-details-button {
+  margin: 0 0 24px;
+  padding: 11px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #ede9fe;
+  color: #7c3aed;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.add-ingredient-details-button:hover {
+  background: #ddd6fe;
+  transform: translateY(-2px);
+}
+
+.add-ingredient-form {
+  margin-bottom: 28px;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fafafa;
+}
+
+.add-ingredient-form h3 {
+  margin: 0 0 18px;
+  color: #1e293b;
+  font-size: 18px;
+}
+
+.ingredient-add-fields {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+}
+
+.ingredient-add-fields input {
+  width: 100%;
+  padding: 12px 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  outline: none;
+  background: white;
+}
+
+.ingredient-add-fields input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.ingredient-add-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+@media (max-width: 650px) {
+  .ingredient-add-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .ingredient-add-actions {
+    justify-content: stretch;
+  }
+
+  .ingredient-add-actions button {
+    flex: 1;
+  }
+}

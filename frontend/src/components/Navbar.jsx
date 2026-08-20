@@ -7,7 +7,7 @@ function Navbar({ currentPage, onNavigate, onAddRecipe }) {
         onClick={() => onNavigate('home')}
       >
         <span className="brand-icon">🍴</span>
-        <span>RecipeVault</span>
+        <span>Recipe Manager</span>
       </button>
 
       <div className="nav-links">

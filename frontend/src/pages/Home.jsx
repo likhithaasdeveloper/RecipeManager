@@ -8,7 +8,7 @@ function Home({ onExplore, onAddRecipe }) {
         <div className="hero-content">
 
           <span className="hero-badge">
-            ✨ Discover something delicious
+            Discover something delicious
           </span>
 
           <h1>
