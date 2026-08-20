@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
@@ -26,14 +27,33 @@ public class Recipe {
     @Positive
     private Integer servings;
 
+    @Column(columnDefinition = "TEXT")
+    private String instructions;
+
     public Recipe() {
     }
 
+    // Existing constructor - keeping this so your old code doesn't break
     public Recipe(String name, String cuisine, Integer prepTime, Integer servings) {
         this.name = name;
         this.cuisine = cuisine;
         this.prepTime = prepTime;
         this.servings = servings;
+    }
+
+    // New constructor with instructions
+    public Recipe(
+            String name,
+            String cuisine,
+            Integer prepTime,
+            Integer servings,
+            String instructions) {
+
+        this.name = name;
+        this.cuisine = cuisine;
+        this.prepTime = prepTime;
+        this.servings = servings;
+        this.instructions = instructions;
     }
 
     public Long getId() {
@@ -74,5 +94,13 @@ public class Recipe {
 
     public void setServings(Integer servings) {
         this.servings = servings;
+    }
+
+    public String getInstructions() {
+        return instructions;
+    }
+
+    public void setInstructions(String instructions) {
+        this.instructions = instructions;
     }
 }

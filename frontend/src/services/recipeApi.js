@@ -71,3 +71,54 @@ export async function createIngredient(ingredient) {
 
   return response.json()
 }
+export async function updateRecipe(id, recipe) {
+  const response = await fetch(`${API_URL}/recipes/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(recipe),
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to update recipe')
+  }
+
+  return response.json()
+}
+
+export async function deleteRecipe(id) {
+  const response = await fetch(`${API_URL}/recipes/${id}`, {
+    method: 'DELETE',
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to delete recipe')
+  }
+}
+
+export async function updateIngredient(id, ingredient) {
+  const response = await fetch(`${API_URL}/ingredients/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(ingredient),
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to update ingredient')
+  }
+
+  return response.json()
+}
+
+export async function deleteIngredient(id) {
+  const response = await fetch(`${API_URL}/ingredients/${id}`, {
+    method: 'DELETE',
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to delete ingredient')
+  }
+}

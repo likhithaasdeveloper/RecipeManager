@@ -1,169 +1,119 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import './App.css'
-import { getRecipes } from './services/recipeApi'
-import RecipeCard from './components/RecipeCard'
+
+import Navbar from './components/Navbar'
+import Home from './pages/Home'
+import ExploreRecipes from './pages/ExploreRecipes'
+
 import RecipeDetails from './components/RecipeDetails'
 import RecipeForm from './components/RecipeForm'
 
+import RecipeEdit from './components/RecipeEdit'
+
 function App() {
-  const [recipes, setRecipes] = useState([])
+  const [currentPage, setCurrentPage] = useState('home')
+
   const [selectedRecipeId, setSelectedRecipeId] = useState(null)
-
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-
-  const [search, setSearch] = useState('')
-  const [cuisine, setCuisine] = useState('')
-
-  const [page, setPage] = useState(0)
-  const [totalPages, setTotalPages] = useState(0)
 
   const [showForm, setShowForm] = useState(false)
 
-  // Fetch recipes from backend
-  async function loadRecipes() {
-    try {
-      setLoading(true)
-      setError('')
+  const [showEdit, setShowEdit] = useState(false)
 
-      const data = await getRecipes(page, 5, cuisine)
-
-      setRecipes(data.content)
-      setTotalPages(data.totalPages)
-    } catch (err) {
-      setError('Failed to load recipes')
-    } finally {
-      setLoading(false)
-    }
+  function goHome() {
+    setSelectedRecipeId(null)
+    setShowForm(false)
+    setCurrentPage('home')
   }
 
-  // Fetch recipes whenever page or cuisine changes
-  useEffect(() => {
-    loadRecipes()
-  }, [page, cuisine])
-
-  // Loading state
-  if (loading) {
-    return <h2>Loading recipes...</h2>
+  function goExplore() {
+    setSelectedRecipeId(null)
+    setShowForm(false)
+    setCurrentPage('explore')
   }
 
-  // Error state
-  if (error) {
-    return <h2>{error}</h2>
+  function openRecipe(recipeId) {
+    setSelectedRecipeId(recipeId)
   }
 
-  // Show recipe details
-  if (selectedRecipeId !== null) {
-    return (
-      <RecipeDetails
-        recipeId={selectedRecipeId}
-        onBack={() => setSelectedRecipeId(null)}
-      />
-    )
+  function openAddRecipe() {
+    setSelectedRecipeId(null)
+    setShowForm(true)
   }
 
-  // Show Add Recipe form
-  if (showForm) {
-    return (
-      <RecipeForm
-        onCancel={() => setShowForm(false)}
-        onRecipeAdded={async () => {
-          setShowForm(false)
-
-          // Refresh recipes after creating a new recipe
-          await loadRecipes()
-        }}
-      />
-    )
+  function closeRecipeDetails() {
+    setSelectedRecipeId(null)
   }
 
-  // Search recipes by name
-  const filteredRecipes = recipes.filter((recipe) =>
-    recipe.name.toLowerCase().includes(search.toLowerCase())
-  )
+  function closeForm() {
+    setShowForm(false)
+  }
+
+  function openEdit() {
+    setShowEdit(true)
+  }
+
+  function closeEdit() {
+    setShowEdit(false)
+  }
 
   return (
     <div className="app">
 
-      {/* Add Recipe Button */}
-      <button
-        className="add-recipe-button"
-        onClick={() => setShowForm(true)}
-      >
-        + Add Recipe
-      </button>
+      <Navbar
+        currentPage={currentPage}
+        onNavigate={(page) => {
+          if (page === 'home') {
+            goHome()
+          } else if (page === 'explore') {
+            goExplore()
+          }
+        }}
+        onAddRecipe={openAddRecipe}
+      />
 
-      {/* Header */}
-      <h1>Recipe Manager</h1>
+      {selectedRecipeId !== null && showEdit ? (
 
-      <p>
-        Discover, manage and explore your favorite recipes
-      </p>
-
-      {/* Search and Cuisine Filter */}
-      <div className="filters">
-
-        <input
-          type="text"
-          placeholder="Search recipes..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+        <RecipeEdit
+          recipeId={selectedRecipeId}
+          onCancel={closeEdit}
+          onUpdated={() => {
+            setShowEdit(false)
+          }}
         />
 
-        <select
-          value={cuisine}
-          onChange={(e) => {
-            setCuisine(e.target.value)
-            setPage(0)
+      ) : selectedRecipeId !== null ? (
+
+        <RecipeDetails
+          recipeId={selectedRecipeId}
+          onBack={closeRecipeDetails}
+          onEdit={openEdit}
+        />
+
+      ) : showForm ? (
+
+        <RecipeForm
+          onCancel={closeForm}
+          onRecipeAdded={() => {
+            setShowForm(false)
+            setCurrentPage('explore')
           }}
-        >
-          <option value="">All cuisines</option>
-          <option value="Italian">Italian</option>
-          <option value="Indian">Indian</option>
-          <option value="American">American</option>
-          <option value="Chinese">Chinese</option>
-          <option value="Mexican">Mexican</option>
-          <option value="Japanese">Japanese</option>
-          <option value="Greek">Greek</option>
-        </select>
+        />
 
-      </div>
+      ) : currentPage === 'home' ? (
 
-      {/* Recipe Cards */}
-      <div className="recipe-list">
+        <Home
+          onExplore={goExplore}
+          onAddRecipe={openAddRecipe}
+        />
 
-        {filteredRecipes.map((recipe) => (
-          <RecipeCard
-            key={recipe.id}
-            recipe={recipe}
-            onView={() => setSelectedRecipeId(recipe.id)}
-          />
-        ))}
+      ) : (
 
-      </div>
+        <ExploreRecipes
+          onViewRecipe={openRecipe}
+          onAddRecipe={openAddRecipe}
+        />
 
-      {/* Pagination */}
-      <div className="pagination">
-
-        <button
-          onClick={() => setPage(page - 1)}
-          disabled={page === 0}
-        >
-          ← Previous
-        </button>
-
-        <span>
-          Page {page + 1} of {totalPages}
-        </span>
-
-        <button
-          onClick={() => setPage(page + 1)}
-          disabled={page === totalPages - 1}
-        >
-          Next →
-        </button>
-
-      </div>
+      )}
 
     </div>
   )
