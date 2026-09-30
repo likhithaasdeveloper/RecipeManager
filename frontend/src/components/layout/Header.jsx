@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ROUTES } from '../../constants';
+import { ROUTES } from '../../constants/routes.js';
 
 export const Header = () => {
   return (

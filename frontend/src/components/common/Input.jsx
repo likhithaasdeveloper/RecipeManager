@@ -9,10 +9,10 @@ export const Input = ({
   autoFocus = false,
   ...rest
 }) => {
-  // State to toggle password visibility
+  
   const [showPassword, setShowPassword] = useState(false);
 
-  // Check if this input field is a password type
+  
   const isPasswordType = type === 'password';
 
   // Handles moving to next input when Enter key is pressed
@@ -58,7 +58,7 @@ export const Input = ({
           }}
         />
 
-        {/* Show / Hide Toggle Button */}
+       
         {isPasswordType && (
           <button
             type="button"
