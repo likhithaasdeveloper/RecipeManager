@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = axios.create({
+const API = axios.create({ // create api instance
   baseURL: 'http://localhost:8080/api',
   headers: {
     'Content-Type': 'application/json',
@@ -25,7 +25,7 @@ API.interceptors.response.use(
   (error) => {
     const isAuthRoute = error.config?.url?.includes('/auth/login') || error.config?.url?.includes('/auth/register');
     
-    // Only clear session and redirect if it's a PROTECTED route returning 401
+
     if (error.response && error.response.status === 401 && !isAuthRoute) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');

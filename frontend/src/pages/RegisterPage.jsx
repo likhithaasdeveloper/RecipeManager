@@ -105,7 +105,7 @@ export const RegisterPage = () => {
         </div>
       </form>
 
-      {/* CROSS NAVIGATION LINK */}
+     
       <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: '#4B5563' }}>
         Already have an account?{' '}
         <Link to="/login" style={{ color: '#2563EB', fontWeight: '600', textDecoration: 'none' }}>
@@ -113,7 +113,7 @@ export const RegisterPage = () => {
         </Link>
       </div>
 
-      {/* BACK TO PORTAL SELECTION */}
+      
       <div style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.8125rem' }}>
         <Link to="/" style={{ color: '#6B7280', textDecoration: 'underline' }}>
           ← Back to Portal Selection

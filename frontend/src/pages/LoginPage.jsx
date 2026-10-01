@@ -21,7 +21,7 @@ export const LoginPage = () => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(loginSchema),
-    mode: 'onChange', // Real-time validation on keystroke restored
+    mode: 'onChange', 
   });
 
   const onSubmit = async (data) => {
@@ -29,7 +29,7 @@ export const LoginPage = () => {
     
     try {
       const response = await authService.login(data);
-      setApiError(''); // Clear error on successful response
+      setApiError(''); 
       
       if (response.user?.role === 'ADMIN') {
         navigate('/admin/dashboard');
@@ -37,7 +37,6 @@ export const LoginPage = () => {
         navigate('/dashboard');
       }
     } catch (error) {
-      // Permanent error message mounted in React state
       setApiError('Invalid credentials. Please try again.');
     } finally {
       setLoading(false);
@@ -102,7 +101,7 @@ export const LoginPage = () => {
         </div>
       </form>
 
-      {/* CROSS NAVIGATION LINK */}
+      
       {!isAdminLogin && (
         <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: '#4B5563' }}>
           Don't have an account?{' '}
@@ -112,7 +111,7 @@ export const LoginPage = () => {
         </div>
       )}
 
-      {/* BACK TO PORTAL SELECTION */}
+    
       <div style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.8125rem' }}>
         <Link to="/" style={{ color: '#6B7280', textDecoration: 'underline' }}>
           ← Back to Portal Selection
@@ -120,4 +119,4 @@ export const LoginPage = () => {
       </div>
     </div>
   );
-};
+};        

@@ -13,7 +13,7 @@ export const authService = {
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       if (response.data.user) {
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('user', JSON.stringify(response.data.user));//cuz user is a object
       }
     }
     return response.data;
@@ -29,6 +29,6 @@ export const authService = {
   // Get Current Authenticated User
   getCurrentUser: () => {
     const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    return user ? JSON.parse(user) : null; // convert back to object
   }
 };

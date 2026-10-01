@@ -21,5 +21,6 @@ export const registerSchema = z.object({
   confirmPassword: z.string().min(1, 'Please confirm your password'),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
-  path: ['confirmPassword'],
+  path: ['confirmPassword'], // attributes the error to the confirmPassword field
 });
+//.refine() comparing two different fields in the schema, ensuring that the password and confirmPassword fields match. If they don't, it provides a custom error message and specifies the path to the confirmPassword field for error reporting.
