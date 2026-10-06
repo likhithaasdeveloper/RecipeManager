@@ -44,6 +44,8 @@ public class RecipeController {
             recipe.setDescription(updatedData.getDescription());
             recipe.setIngredients(updatedData.getIngredients());
             recipe.setCuisine(updatedData.getCuisine());
+            // Reset status to PENDING on edit so Admin can re-review before public display
+            recipe.setStatus("PENDING");
             return ResponseEntity.ok(recipeRepository.save(recipe));
         }).orElse(ResponseEntity.notFound().build());
     }
@@ -58,11 +60,11 @@ public class RecipeController {
 
     @PutMapping("/{id}/reject")
     public ResponseEntity<Recipe> rejectRecipe(@PathVariable Long id) {
-    return recipeRepository.findById(id).map(recipe -> {
-        recipe.setStatus("REJECTED");
-        return ResponseEntity.ok(recipeRepository.save(recipe));
-    }).orElse(ResponseEntity.notFound().build());
-}
+        return recipeRepository.findById(id).map(recipe -> {
+            recipe.setStatus("REJECTED");
+            return ResponseEntity.ok(recipeRepository.save(recipe));
+        }).orElse(ResponseEntity.notFound().build());
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteRecipe(@PathVariable Long id) {

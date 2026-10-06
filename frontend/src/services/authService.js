@@ -21,6 +21,21 @@ export const authService = {
     return response.data;
   },
 
+  getCreators: async () => {
+    const res = await API.get('/auth/creators');
+    return res.data;
+  },
+
+  toggleCreatorStatus: async (id) => {
+    const res = await API.put(`/auth/creators/${id}/toggle-status`);
+    return res.data;
+  },
+
+  getUserStatus: async (email) => {
+    const res = await API.get(`/auth/user-status?email=${email}`);
+    return res.data;
+  },
+
   getCurrentUser: () => {
     try {
       const userStr = localStorage.getItem('user');
@@ -40,4 +55,3 @@ export const authService = {
     localStorage.removeItem('jwt');
   }
 };
-

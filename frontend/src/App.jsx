@@ -6,8 +6,10 @@ import { RegisterPage } from './pages/RegisterPage';
 import { RecipeBrowser } from './pages/RecipeBrowser';
 import { SavedRecipes } from './pages/SavedRecipes';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { ManageCreators } from './pages/ManageCreators';
 import { CreateRecipe } from './pages/CreateRecipe';
 import { MyRecipes } from './pages/MyRecipes';
+import { EditRecipe } from './pages/EditRecipe';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
 import { ProtectedRoute, PublicOnlyRoute } from './components/common/ProtectedRoute';
 import { DashboardLayout } from './components/layout/DashboardLayout';
@@ -39,12 +41,14 @@ function App() {
             <Route path="/creator/create" element={<CreateRecipe />} />
             <Route path="/creator/recipes" element={<RecipeBrowser readOnly={true} />} />
             <Route path="/creator/my-recipes" element={<MyRecipes />} />
+            <Route path="/edit-recipe/:id" element={<EditRecipe />} />
           </Route>
 
           {/* ADMIN ROUTES */}
           <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
             <Route path="/admin/approvals" element={<AdminDashboard />} />
             <Route path="/admin/recipes" element={<RecipeBrowser readOnly={true} />} />
+            <Route path="/admin/creators" element={<ManageCreators />} />
           </Route>
 
         </Route>

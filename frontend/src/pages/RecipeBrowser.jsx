@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { recipeService } from '../services/recipeService';
-import { DashboardLayout } from '../components/layout/DashboardLayout';
+import { SearchableCuisineSelect } from '../components/common/SearchableCuisineSelect';
 
 export const RecipeBrowser = ({ showSavedOnly = false, readOnly = false }) => {
   const navigate = useNavigate();
@@ -64,14 +64,12 @@ export const RecipeBrowser = ({ showSavedOnly = false, readOnly = false }) => {
   }, [searchQuery, selectedCuisine, showSavedOnly, recipes, savedRecipeIds]);
 
   const toggleSaveRecipe = (id) => {
-    // 1. IF GUEST USER -> ALERT AND REDIRECT
     if (!currentUser) {
       alert('Please log in or register to save recipes to your profile!');
       navigate('/login');
       return;
     }
 
-    // 2. IF LOGGED IN END-USER -> SAVE
     let updatedSaved;
     if (savedRecipeIds.includes(id)) {
       updatedSaved = savedRecipeIds.filter((item) => item !== id);
@@ -99,7 +97,7 @@ export const RecipeBrowser = ({ showSavedOnly = false, readOnly = false }) => {
   const userRole = (currentUser?.role || '').toUpperCase().replace('ROLE_', '');
   const isAdmin = userRole === 'ADMIN';
 
-  const content = (
+  return (
     <div style={{ fontFamily: 'sans-serif', maxWidth: '1000px', margin: '0 auto', padding: currentUser ? '0' : '2rem 1rem' }}>
       
       {/* HEADER BAR */}
@@ -113,34 +111,18 @@ export const RecipeBrowser = ({ showSavedOnly = false, readOnly = false }) => {
           </p>
         </div>
 
-        {/* GUEST VIEW CONTROLS */}
         {!currentUser && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <button 
               onClick={() => navigate('/')} 
-              style={{ 
-                padding: '0.5rem 1rem', 
-                backgroundColor: '#F3F4F6', 
-                color: '#374151', 
-                border: '1px solid #D1D5DB', 
-                borderRadius: '6px', 
-                cursor: 'pointer', 
-                fontWeight: '600',
-                fontSize: '0.875rem'
-              }}
+              style={{ padding: '0.5rem 1rem', backgroundColor: '#F3F4F6', color: '#374151', border: '1px solid #D1D5DB', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '0.875rem' }}
             >
               ← Back to Portal
             </button>
-            <Link 
-              to="/login" 
-              style={{ padding: '0.5rem 1rem', backgroundColor: '#2563EB', color: '#fff', textDecoration: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.875rem' }}
-            >
+            <Link to="/login" style={{ padding: '0.5rem 1rem', backgroundColor: '#2563EB', color: '#fff', textDecoration: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.875rem' }}>
               Log In
             </Link>
-            <Link 
-              to="/register" 
-              style={{ padding: '0.5rem 1rem', backgroundColor: '#10B981', color: '#fff', textDecoration: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.875rem' }}
-            >
+            <Link to="/register" style={{ padding: '0.5rem 1rem', backgroundColor: '#10B981', color: '#fff', textDecoration: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.875rem' }}>
               Register
             </Link>
           </div>
@@ -148,7 +130,7 @@ export const RecipeBrowser = ({ showSavedOnly = false, readOnly = false }) => {
       </div>
 
       {/* SEARCH & FILTER BAR */}
-      <div style={{ backgroundColor: '#fff', padding: '1rem', borderRadius: '8px', border: '1px solid #E5E7EB', marginBottom: '1.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+      <div style={{ backgroundColor: '#fff', padding: '1rem', borderRadius: '8px', border: '1px solid #E5E7EB', marginBottom: '1.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <input 
           type="text" 
           placeholder="Search title or ingredients..." 
@@ -157,18 +139,14 @@ export const RecipeBrowser = ({ showSavedOnly = false, readOnly = false }) => {
           style={{ flex: 2, padding: '0.65rem', borderRadius: '6px', border: '1px solid #D1D5DB', minWidth: '200px', outline: 'none' }}
         />
 
-        <select 
-          value={selectedCuisine} 
-          onChange={(e) => setSelectedCuisine(e.target.value)}
-          style={{ flex: 1, padding: '0.65rem', borderRadius: '6px', border: '1px solid #D1D5DB', minWidth: '150px', outline: 'none' }}
-        >
-          <option value="All">All Cuisines</option>
-          <option value="Italian">Italian</option>
-          <option value="Indian">Indian</option>
-          <option value="Mexican">Mexican</option>
-          <option value="Asian">Asian</option>
-          <option value="American">American</option>
-        </select>
+        {/* SEARCHABLE CUISINE SELECT WITH 'All Cuisines' OPTION */}
+        <div style={{ flex: 1, minWidth: '180px' }}>
+          <SearchableCuisineSelect
+            value={selectedCuisine}
+            onChange={(c) => setSelectedCuisine(c)}
+            includeAllOption={true}
+          />
+        </div>
       </div>
 
       {loading && <p style={{ color: '#6B7280', textAlign: 'center' }}>Loading recipes...</p>}
@@ -205,7 +183,6 @@ export const RecipeBrowser = ({ showSavedOnly = false, readOnly = false }) => {
                       {item.cuisine || 'Approved'}
                     </span>
 
-                    {/* SAVE BUTTON (SHOWN FOR GUESTS AND END USERS) */}
                     {!readOnly && (
                       <button 
                         onClick={() => toggleSaveRecipe(item.id)}
@@ -224,7 +201,6 @@ export const RecipeBrowser = ({ showSavedOnly = false, readOnly = false }) => {
                       </button>
                     )}
 
-                    {/* DELETE BUTTON FOR ADMINS */}
                     {isAdmin && readOnly && (
                       <button
                         onClick={() => handleDeleteAdminRecipe(item.id)}
@@ -263,8 +239,4 @@ export const RecipeBrowser = ({ showSavedOnly = false, readOnly = false }) => {
 
     </div>
   );
-
-  // If user is logged in, DashboardLayout renders it automatically via Outlet or parent. 
-  // Returning content directly works cleanly for both guests and authenticated shells!
-  return content;
 };

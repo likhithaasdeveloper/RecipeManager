@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { authService } from '../services/authService';
 import { recipeService } from '../services/recipeService';
+import { SearchableCuisineSelect } from '../components/common/SearchableCuisineSelect';
 
 export const CreateRecipe = () => {
   const user = authService.getCurrentUser();
+
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(true);
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -12,6 +16,26 @@ export const CreateRecipe = () => {
   const [ingredientsList, setIngredientsList] = useState([]);
   const [ingredientName, setIngredientName] = useState('');
   const [ingredientQty, setIngredientQty] = useState('');
+
+  useEffect(() => {
+    const verifyStatus = async () => {
+      if (user?.email) {
+        try {
+          const res = await authService.getUserStatus(user.email);
+          if (res && res.enabled === false) {
+            setIsDisabled(true);
+          }
+        } catch (err) {
+          console.error('Failed to verify user status:', err);
+        } finally {
+          setCheckingStatus(false);
+        }
+      } else {
+        setCheckingStatus(false);
+      }
+    };
+    verifyStatus();
+  }, [user?.email]);
 
   const handleAddIngredient = (e) => {
     e.preventDefault();
@@ -27,6 +51,12 @@ export const CreateRecipe = () => {
 
   const handleSubmitRecipe = async (e) => {
     e.preventDefault();
+
+    if (isDisabled) {
+      alert('You are currently disabled by the Admin and cannot submit recipes.');
+      return;
+    }
+
     if (!title.trim() || !description.trim() || ingredientsList.length === 0) {
       alert('Please fill out title, description, and at least one ingredient.');
       return;
@@ -56,6 +86,25 @@ export const CreateRecipe = () => {
     }
   };
 
+  if (checkingStatus) {
+    return <p style={{ color: '#6B7280' }}>Verifying creator permissions...</p>;
+  }
+
+  // IF CREATOR IS DISABLED BY ADMIN, RENDER NOTICE INSTEAD OF FORM
+  if (isDisabled) {
+    return (
+      <div style={{ fontFamily: 'sans-serif', maxWidth: '800px', margin: '2rem auto' }}>
+        <div style={{ backgroundColor: '#FEE2E2', border: '1.5px solid #EF4444', padding: '2rem', borderRadius: '8px', textAlign: 'center' }}>
+          <h2 style={{ color: '#991B1B', margin: '0 0 0.5rem 0' }}>Account Creation Rights Disabled</h2>
+          <p style={{ color: '#B91C1C', margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }}>
+            You are unable to create new recipes because your creator account has been disabled by the Administrator.
+            You can still browse existing recipes and manage your previously created dishes in <strong>My Recipes</strong>.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ fontFamily: 'sans-serif', maxWidth: '800px' }}>
       <div style={{ marginBottom: '1.5rem' }}>
@@ -74,13 +123,10 @@ export const CreateRecipe = () => {
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: 'bold', fontSize: '0.875rem' }}>Cuisine</label>
-              <select value={cuisine} onChange={(e) => setCuisine(e.target.value)} style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid #D1D5DB', boxSizing: 'border-box' }}>
-                <option value="Italian">Italian</option>
-                <option value="Indian">Indian</option>
-                <option value="Mexican">Mexican</option>
-                <option value="Asian">Asian</option>
-                <option value="American">American</option>
-              </select>
+              <SearchableCuisineSelect
+                value={cuisine}
+                onChange={(selected) => setCuisine(selected)}
+              />
             </div>
           </div>
 

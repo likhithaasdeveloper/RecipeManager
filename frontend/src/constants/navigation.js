@@ -10,6 +10,11 @@ export const NAV_ITEMS = [
     path: '/admin/recipes',
     roles: ['ADMIN'],
   },
+  {
+    label: 'All Creators',
+    path: '/admin/creators',
+    roles: ['ADMIN'],
+  },
 
   // CREATOR LINKS
   {

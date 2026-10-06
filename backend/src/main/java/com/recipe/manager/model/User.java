@@ -18,7 +18,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private String role; // "ADMIN" or "USER"
+    private String role; // "ADMIN", "CREATOR", or "USER"
+
+    private Boolean enabled = true; // Enabled status flag
 
     public User() {}
 
@@ -27,6 +29,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = role;
+        this.enabled = true;
     }
 
     public Long getId() { return id; }
@@ -43,4 +46,7 @@ public class User {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public Boolean getEnabled() { return enabled != null ? enabled : true; }
+    public void setEnabled(Boolean enabled) { this.enabled = enabled; }
 }

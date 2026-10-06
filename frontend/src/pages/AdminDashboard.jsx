@@ -45,7 +45,7 @@ export const AdminDashboard = () => {
   };
 
   return (
-    <div style={{ fontFamily: 'sans-serif' }}>
+    <div style={{ fontFamily: 'sans-serif', maxWidth: '1000px', width: '100%' }}>
       <div style={{ marginBottom: '1.5rem' }}>
         <h2 style={{ margin: 0, color: '#111827', fontSize: '1.5rem' }}>
           Pending Approvals ({pendingRecipes.length})
@@ -70,21 +70,24 @@ export const AdminDashboard = () => {
       )}
 
       {!loading && pendingRecipes.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
           {pendingRecipes.map((item) => (
             <div 
               key={item.id} 
               style={{ 
                 backgroundColor: '#fff', 
-                padding: '1.25rem', 
+                padding: '1.25rem 1.5rem', 
                 borderRadius: '8px', 
                 border: '1px solid #FCD34D', 
                 display: 'flex', 
                 justify: 'space-between', 
-                alignItems: 'center' 
+                alignItems: 'center',
+                width: '100%',
+                boxSizing: 'border-box'
               }}
             >
-              <div>
+              {/* LEFT CONTENT CONTAINER */}
+              <div style={{ flex: 1, paddingRight: '1.5rem' }}>
                 <h3 style={{ margin: '0 0 0.25rem 0', color: '#111827', fontSize: '1.1rem' }}>{item.title}</h3>
                 <p style={{ margin: '0 0 0.5rem 0', color: '#2563EB', fontSize: '0.8rem', fontWeight: 'bold' }}>
                   Submitted by: {item.creatorName || item.creatorEmail || 'Unknown'}
@@ -95,17 +98,19 @@ export const AdminDashboard = () => {
                 <p style={{ margin: 0, color: '#6B7280', fontSize: '0.85rem' }}>{item.description || item.instructions}</p>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              {/* RIGHT ACTION BUTTONS ANCHORED AT FAR EDGE */}
+              <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
                 <button
                   onClick={() => handleApprove(item.id)}
                   style={{
-                    padding: '0.5rem 1rem',
+                    padding: '0.55rem 1.2rem',
                     backgroundColor: '#10B981',
                     color: '#fff',
                     border: 'none',
                     borderRadius: '6px',
                     fontWeight: 'bold',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap'
                   }}
                 >
                   Approve
@@ -113,13 +118,14 @@ export const AdminDashboard = () => {
                 <button
                   onClick={() => handleReject(item.id)}
                   style={{
-                    padding: '0.5rem 1rem',
+                    padding: '0.55rem 1.2rem',
                     backgroundColor: '#EF4444',
                     color: '#fff',
                     border: 'none',
                     borderRadius: '6px',
                     fontWeight: 'bold',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap'
                   }}
                 >
                   Reject

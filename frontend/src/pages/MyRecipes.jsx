@@ -1,20 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { recipeService } from '../services/recipeService';
 
 export const MyRecipes = () => {
+  const navigate = useNavigate();
   const user = authService.getCurrentUser();
   const userEmail = user?.email;
 
   const [myRecipes, setMyRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Edit Modal State
-  const [editingId, setEditingId] = useState(null);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [cuisine, setCuisine] = useState('Italian');
-  const [ingredients, setIngredients] = useState('');
 
   const fetchMyRecipes = useCallback(async () => {
     if (!userEmail) return;
@@ -29,37 +24,12 @@ export const MyRecipes = () => {
     }
   }, [userEmail]);
 
-  // DEPEND ONLY ON userEmail primitive string to stop the infinite loop
   useEffect(() => {
     fetchMyRecipes();
   }, [fetchMyRecipes]);
 
-  const handleEditClick = (recipe) => {
-    setEditingId(recipe.id);
-    setTitle(recipe.title);
-    setDescription(recipe.description);
-    setCuisine(recipe.cuisine || 'Italian');
-    setIngredients(recipe.ingredients || '');
-  };
-
-  const handleUpdateSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await recipeService.updateRecipe(editingId, {
-        title,
-        description,
-        cuisine,
-        ingredients,
-        creatorName: user?.name || userEmail,
-        creatorEmail: userEmail,
-        status: 'PENDING'
-      });
-      alert('Recipe updated and resubmitted for approval!');
-      setEditingId(null);
-      fetchMyRecipes();
-    } catch (err) {
-      alert('Failed to update recipe');
-    }
+  const handleEditClick = (recipeId) => {
+    navigate(`/edit-recipe/${recipeId}`);
   };
 
   const handleDelete = async (id) => {
@@ -81,23 +51,6 @@ export const MyRecipes = () => {
           Manage your submitted recipes, view approval status, or edit rejected dishes
         </p>
       </div>
-
-      {/* EDIT MODAL / FORM INLINE */}
-      {editingId && (
-        <div style={{ backgroundColor: '#FEF3C7', padding: '1.25rem', borderRadius: '8px', border: '1px solid #F59E0B', marginBottom: '1.5rem' }}>
-          <h3 style={{ margin: '0 0 1rem 0', color: '#92400E' }}>Edit Recipe</h3>
-          <form onSubmit={handleUpdateSubmit}>
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" style={{ width: '100%', padding: '0.5rem', marginBottom: '0.5rem', borderRadius: '4px', border: '1px solid #D1D5DB' }} />
-            <input type="text" value={ingredients} onChange={(e) => setIngredients(e.target.value)} placeholder="Ingredients" style={{ width: '100%', padding: '0.5rem', marginBottom: '0.5rem', borderRadius: '4px', border: '1px solid #D1D5DB' }} />
-            <textarea rows="2" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Instructions" style={{ width: '100%', padding: '0.5rem', marginBottom: '0.75rem', borderRadius: '4px', border: '1px solid #D1D5DB' }} />
-            
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button type="submit" style={{ padding: '0.5rem 1rem', backgroundColor: '#059669', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>Save Changes</button>
-              <button type="button" onClick={() => setEditingId(null)} style={{ padding: '0.5rem 1rem', backgroundColor: '#6B7280', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Cancel</button>
-            </div>
-          </form>
-        </div>
-      )}
 
       {loading && <p style={{ color: '#6B7280' }}>Loading your recipes...</p>}
 
@@ -137,7 +90,7 @@ export const MyRecipes = () => {
               </div>
 
               <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button onClick={() => handleEditClick(item)} style={{ padding: '0.4rem 0.8rem', backgroundColor: '#2563EB', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                <button onClick={() => handleEditClick(item.id)} style={{ padding: '0.4rem 0.8rem', backgroundColor: '#2563EB', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
                   {item.status === 'REJECTED' ? 'Re-create / Edit' : 'Edit'}
                 </button>
                 <button onClick={() => handleDelete(item.id)} style={{ padding: '0.4rem 0.8rem', backgroundColor: '#EF4444', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
