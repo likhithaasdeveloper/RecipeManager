@@ -1,34 +1,43 @@
 import API from './api';
 
 export const authService = {
-  // Register API Call
+  login: async (credentials) => {
+    localStorage.clear();
+    const response = await API.post('/auth/login', credentials);
+    
+    if (response.data?.token) {
+      localStorage.setItem('token', response.data.token);
+    }
+
+    const userData = response.data?.user || response.data;
+    localStorage.setItem('user', JSON.stringify(userData));
+
+    return response.data;
+  },
+
   register: async (userData) => {
+    localStorage.clear();
     const response = await API.post('/auth/register', userData);
     return response.data;
   },
 
-  // Login API Call and localStorage handling
-  login: async (credentials) => {
-    const response = await API.post('/auth/login', credentials);
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      if (response.data.user) {
-        localStorage.setItem('user', JSON.stringify(response.data.user));//cuz user is a object
-      }
-    }
-    return response.data;
-  },
-
-  // Logout
-  logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = '/login';
-  },
-
-  // Get Current Authenticated User
   getCurrentUser: () => {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null; // convert back to object
+    try {
+      const userStr = localStorage.getItem('user');
+      if (!userStr || userStr === 'undefined' || userStr === 'null') {
+        return null;
+      }
+      const parsed = JSON.parse(userStr);
+      return parsed && parsed.email ? parsed : null;
+    } catch (e) {
+      return null;
+    }
+  },
+
+  logout: () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('jwt');
   }
 };
+

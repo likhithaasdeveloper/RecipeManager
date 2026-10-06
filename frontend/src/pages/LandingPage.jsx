@@ -1,8 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authService } from '../services/authService';
 
 export const LandingPage = () => {
   const navigate = useNavigate();
+
+  const handleBrowseRecipes = () => {
+    // 1. Synchronously purge all stored session tokens/user objects
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('jwt');
+    if (authService.logout) authService.logout();
+    navigate('/recipes');
+  };
 
   const cardStyle = {
     flex: '1',
@@ -67,7 +77,7 @@ export const LandingPage = () => {
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🍴</div>
           <h2 style={{ fontSize: '1.25rem', color: '#111827' }}>End User</h2>
           <p style={{ fontSize: '0.875rem', color: '#6B7280', height: '40px' }}>Browse approved recipes or log in for saved favorites.</p>
-          <button style={buttonStyle} onClick={() => navigate('/recipes')}>
+          <button style={buttonStyle} onClick={handleBrowseRecipes}>
             Browse Recipes
           </button>
           <button 

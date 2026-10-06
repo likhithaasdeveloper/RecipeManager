@@ -1,26 +1,33 @@
 import { z } from 'zod';
 
-// Reusable strict password validation rules
-const passwordValidation = z
-  .string()
-  .min(6, 'Password must be at least 6 characters')
-  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-  .regex(/[0-9]/, 'Password must contain at least one number')
-  .regex(/[^a-zA-Z0-9]/, 'Password must contain at least one special character');
-
 export const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().nonempty('Email is required').email('Invalid email address format'),
+  password: z.string().nonempty('Password is required'),
 });
 
-export const registerSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  password: passwordValidation,
-  confirmPassword: z.string().min(1, 'Please confirm your password'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ['confirmPassword'], // attributes the error to the confirmPassword field
-});
-//.refine() comparing two different fields in the schema, ensuring that the password and confirmPassword fields match. If they don't, it provides a custom error message and specifies the path to the confirmPassword field for error reporting.
+export const registerSchema = z
+  .object({
+    name: z
+      .string()
+      .nonempty('Full name is required')
+      .min(4, 'Name must be at least 4 characters')
+      .regex(/^[a-zA-Z\s]+$/, 'Name can only contain alphabetic characters'),
+    email: z
+      .string()
+      .nonempty('Email is required')
+      .email('Invalid email address format'),
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .regex(/[A-Z]/, 'Must contain at least one uppercase letter')
+      .regex(/[a-z]/, 'Must contain at least one lowercase letter')
+      .regex(/[^a-zA-Z0-9]/, 'Must contain at least one special character'),
+    confirmPassword: z.string().nonempty('Please confirm your password'),
+    role: z.enum(['CREATOR', 'USER'], {
+      required_error: 'Please select an account type',
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });

@@ -1,113 +1,134 @@
 import React, { useEffect, useState } from 'react';
-import { authService } from '../services/authService';
 import { recipeService } from '../services/recipeService';
 
 export const AdminDashboard = () => {
-  const [user, setUser] = useState(null);
-  const [recipes, setRecipes] = useState([]);
+  const [pendingRecipes, setPendingRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    setUser(authService.getCurrentUser());
-    fetchRecipes();
+    loadPendingRecipes();
   }, []);
 
-  const fetchRecipes = async () => {
+  const loadPendingRecipes = async () => {
     setLoading(true);
     try {
-      const data = await recipeService.getAllRecipes();
-      setRecipes(data);
+      const pendingData = await recipeService.getPendingRecipes();
+      setPendingRecipes(pendingData || []);
     } catch (err) {
-      setRecipes([
-        { id: 1, title: 'Classic Garlic Butter Pasta', description: 'Rich Alfredo sauce with fresh basil.' },
-        { id: 2, title: 'Avocado Sourdough Toast', description: 'Topped with poached eggs and chili flakes.' }
-      ]);
+      setError('Failed to fetch pending recipes.');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (recipeId) => {
-    if (!window.confirm('Are you sure you want to delete this recipe?')) return;
+  const handleApprove = async (id) => {
     try {
-      await recipeService.deleteRecipe(recipeId);
+      await recipeService.approveRecipe(id);
+      alert('Recipe approved successfully!');
+      loadPendingRecipes();
     } catch (err) {
-      // Ignore network errors for mock deletion
+      alert('Failed to approve recipe.');
     }
-    setRecipes((prev) => prev.filter((r) => r.id !== recipeId));
+  };
+
+  const handleReject = async (id) => {
+    if (!window.confirm('Are you sure you want to reject this recipe?')) return;
+    try {
+      await recipeService.rejectRecipe(id);
+      alert('Recipe rejected successfully.');
+      loadPendingRecipes();
+    } catch (err) {
+      alert('Failed to reject recipe.');
+    }
   };
 
   return (
-    <div style={{ fontFamily: 'sans-serif', backgroundColor: '#F9FAFB', minHeight: '100vh', padding: '2rem' }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        
-        {/* HEADER */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', backgroundColor: '#fff', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-          <div>
-            <span style={{ backgroundColor: '#FEE2E2', color: '#991B1B', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' }}>
-              🛡️ System Administrator
-            </span>
-            <h1 style={{ color: '#111827', margin: '0.5rem 0 0 0', fontSize: '1.5rem' }}>Welcome, {user?.name || 'Admin'}!</h1>
-          </div>
-          <button 
-            onClick={authService.logout}
-            style={{ padding: '0.5rem 1rem', backgroundColor: '#EF4444', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
-          >
-            Logout
-          </button>
-        </div>
-
-        {/* ADMIN OVERVIEW METRICS */}
-        <div style={{ backgroundColor: '#EFF6FF', borderLeft: '4px solid #2563EB', padding: '1.25rem', borderRadius: '6px', marginBottom: '2rem' }}>
-          <h3 style={{ margin: '0 0 0.5rem 0', color: '#1E40AF' }}>Administrative Portal Active</h3>
-          <p style={{ margin: 0, color: '#1E3A8A', fontSize: '0.9rem' }}>
-            You are logged in with full system administrative privileges.
-          </p>
-        </div>
-
-        {/* RECIPE LIST WITH PERMISSION-BASED ADMIN ACTIONS */}
-        <h3 style={{ color: '#111827', marginBottom: '1rem' }}>Recipe Management</h3>
-
-        {loading && <p style={{ color: '#6B7280' }}>Loading items...</p>}
-
-        {!loading && recipes.length === 0 && (
-          <div style={{ backgroundColor: '#fff', padding: '2rem', borderRadius: '8px', textAlign: 'center', border: '1px solid #E5E7EB' }}>
-            <p style={{ color: '#6B7280', margin: 0 }}>No recipes available.</p>
-          </div>
-        )}
-
-        {!loading && recipes.length > 0 && (
-          <div style={{ display: 'grid', gap: '1rem' }}>
-            {recipes.map((item) => (
-              <div key={item.id} style={{ backgroundColor: '#fff', padding: '1.25rem', borderRadius: '8px', border: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h4 style={{ margin: '0 0 0.25rem 0', color: '#111827' }}>{item.title}</h4>
-                  <p style={{ margin: 0, color: '#6B7280', fontSize: '0.875rem' }}>{item.description}</p>
-                </div>
-
-                {/* PERMISSION-BASED UI: RENDERED FOR ADMIN ONLY (MATCHED LOGOUT BUTTON STYLE) */}
-                {user?.role === 'ADMIN' && (
-                  <button 
-                    onClick={() => handleDelete(item.id)}
-                    style={{
-                      padding: '0.5rem 1rem',
-                      backgroundColor: '#EF4444',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontWeight: 'bold',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Delete 
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
+    <div style={{ fontFamily: 'sans-serif' }}>
+      <div style={{ marginBottom: '1.5rem' }}>
+        <h2 style={{ margin: 0, color: '#111827', fontSize: '1.5rem' }}>
+          Pending Approvals ({pendingRecipes.length})
+        </h2>
+        <p style={{ margin: '0.25rem 0 0 0', color: '#6B7280', fontSize: '0.875rem' }}>
+          Review and approve or reject community recipe submissions
+        </p>
       </div>
+
+      {error && (
+        <div style={{ padding: '0.75rem', backgroundColor: '#FEE2E2', color: '#991B1B', borderRadius: '6px', marginBottom: '1rem' }}>
+          {error}
+        </div>
+      )}
+
+      {loading && <p style={{ color: '#6B7280' }}>Loading pending approvals...</p>}
+
+      {!loading && pendingRecipes.length === 0 && (
+        <div style={{ backgroundColor: '#fff', padding: '3rem', borderRadius: '8px', textAlign: 'center', border: '1px solid #E5E7EB' }}>
+          <p style={{ color: '#6B7280', margin: 0 }}>No pending recipes awaiting approval.</p>
+        </div>
+      )}
+
+      {!loading && pendingRecipes.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {pendingRecipes.map((item) => (
+            <div 
+              key={item.id} 
+              style={{ 
+                backgroundColor: '#fff', 
+                padding: '1.25rem', 
+                borderRadius: '8px', 
+                border: '1px solid #FCD34D', 
+                display: 'flex', 
+                justify: 'space-between', 
+                alignItems: 'center' 
+              }}
+            >
+              <div>
+                <h3 style={{ margin: '0 0 0.25rem 0', color: '#111827', fontSize: '1.1rem' }}>{item.title}</h3>
+                <p style={{ margin: '0 0 0.5rem 0', color: '#2563EB', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                  Submitted by: {item.creatorName || item.creatorEmail || 'Unknown'}
+                </p>
+                <p style={{ margin: '0 0 0.25rem 0', color: '#374151', fontSize: '0.85rem' }}>
+                  <strong>Ingredients:</strong> {item.ingredients}
+                </p>
+                <p style={{ margin: 0, color: '#6B7280', fontSize: '0.85rem' }}>{item.description || item.instructions}</p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button
+                  onClick={() => handleApprove(item.id)}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    backgroundColor: '#10B981',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => handleReject(item.id)}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    backgroundColor: '#EF4444',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

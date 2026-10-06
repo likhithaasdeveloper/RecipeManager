@@ -2,6 +2,7 @@ package com.recipe.manager.controller;
 
 import com.recipe.manager.model.User;
 import com.recipe.manager.repository.UserRepository;
+import com.recipe.manager.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +23,9 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtUtils jwtUtils; // INJECT JWT UTILS
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
@@ -32,8 +36,10 @@ public class AuthController {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         
-        if (user.getRole() == null || user.getRole().isEmpty()) {
+        if (user.getRole() == null || user.getRole().trim().isEmpty()) {
             user.setRole("USER");
+        } else {
+            user.setRole(user.getRole().toUpperCase());
         }
 
         userRepository.save(user);
@@ -54,8 +60,11 @@ public class AuthController {
             User user = userOptional.get();
             if (passwordEncoder.matches(password, user.getPassword())) {
                 
+                // GENERATE REAL SIGNED JWT TOKEN
+                String token = jwtUtils.generateToken(user.getEmail(), user.getRole());
+
                 Map<String, Object> response = new HashMap<>();
-                response.put("token", "mock-jwt-token-for-" + user.getEmail());
+                response.put("token", token);
                 
                 Map<String, String> userData = new HashMap<>();
                 userData.put("name", user.getName());
